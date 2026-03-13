@@ -1,98 +1,302 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Nu Age Gmail Job Extractor</title>
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nu Age Gmail Job Extractor</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body{
-font-family: Arial;
-background:#071a3a;
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-margin:0;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #071535;
+      color: white;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
 
-.container{
-width:600px;
-text-align:center;
-}
+    .container {
+      max-width: 950px;
+      margin: 0 auto;
+    }
 
-textarea{
-width:100%;
-height:200px;
-padding:10px;
-border-radius:8px;
-border:none;
-margin-bottom:15px;
-}
+    .card {
+      background: #102449;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      margin-bottom: 24px;
+    }
 
-button{
-background:#6ac24b;
-color:white;
-border:none;
-padding:12px 20px;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
-}
+    h1 {
+      text-align: center;
+      margin: 0 0 10px;
+      font-size: 34px;
+    }
 
-button:hover{
-background:#5ab33c;
-}
+    .sub {
+      text-align: center;
+      color: #b7c3d9;
+      margin: 0 0 30px;
+    }
 
-.output{
-margin-top:20px;
-background:#0c2b5e;
-padding:15px;
-border-radius:8px;
-text-align:left;
-white-space:pre-wrap;
-}
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
 
-</style>
+    textarea {
+      width: 100%;
+      min-height: 260px;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 15px;
+      resize: vertical;
+      outline: none;
+      background: #f7f9fc;
+      color: #111827;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .primary {
+      background: #6cc04a;
+      color: white;
+    }
+
+    .primary:hover {
+      background: #5daf3d;
+    }
+
+    .secondary {
+      background: #334766;
+      color: white;
+    }
+
+    .secondary:hover {
+      background: #40567a;
+    }
+
+    .output {
+      background: #0a1b38;
+      border-radius: 12px;
+      padding: 18px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      min-height: 220px;
+      color: #eaf1ff;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .field-box {
+      background: #0a1b38;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .field-title {
+      font-size: 13px;
+      color: #9fb2d1;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .field-value {
+      color: white;
+      word-break: break-word;
+      min-height: 24px;
+    }
+
+    .note {
+      color: #b7c3d9;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 700px) {
+      .fields {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <h1>Nu Age Gmail Job Extractor</h1>
+    <p class="sub">Paste an email chain and turn it into clean CommuSoft-ready notes</p>
 
-<div class="container">
+    <div class="card">
+      <label for="emailInput">Paste Gmail message or email thread</label>
+      <textarea id="emailInput" placeholder="Paste the full email here..."></textarea>
 
-<h2>Nu Age Gmail → CommuSoft Extractor</h2>
+      <div class="button-row">
+        <button class="primary" onclick="extractJobInfo()">Extract Job Info</button>
+        <button class="secondary" onclick="copyOutput()">Copy Output</button>
+        <button class="secondary" onclick="clearAllFields()">Clear</button>
+      </div>
 
-<textarea id="email" placeholder="Paste the Gmail message here..."></textarea>
+      <div class="note">
+        Tip: paste the full thread if possible so the job notes are easier for the office to clean up.
+      </div>
+    </div>
 
-<button onclick="extract()">Extract Job Info</button>
+    <div class="card">
+      <label>Extracted CommuSoft Format</label>
+      <div class="output" id="outputBox">Your extracted job details will appear here.</div>
 
-<div class="output" id="output"></div>
+      <div class="fields">
+        <div class="field-box">
+          <div class="field-title">Contact Name</div>
+          <div class="field-value" id="contactName"></div>
+        </div>
 
-</div>
+        <div class="field-box">
+          <div class="field-title">Phone</div>
+          <div class="field-value" id="phone"></div>
+        </div>
 
-<script>
+        <div class="field-box">
+          <div class="field-title">Email</div>
+          <div class="field-value" id="email"></div>
+        </div>
 
-function extract(){
+        <div class="field-box">
+          <div class="field-title">Postcode</div>
+          <div class="field-value" id="postcode"></div>
+        </div>
 
-let text=document.getElementById("email").value
+        <div class="field-box" style="grid-column: 1 / -1;">
+          <div class="field-title">Address</div>
+          <div class="field-value" id="address"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-let postcode=text.match(/[A-Z]{1,2}\d{1,2}\s?\d[A-Z]{2}/i)
-let phone=text.match(/(\+44|0)\d{9,10}/)
+  <script>
+    function extractJobInfo() {
+      const text = document.getElementById("emailInput").value.trim();
 
-let result=
-`Contact Name:
-Address:
-Postcode: ${postcode ? postcode[0] : ""}
+      if (!text) {
+        document.getElementById("outputBox").innerText = "Please paste an email first.";
+        return;
+      }
 
-Phone: ${phone ? phone[0] : ""}
+      const cleaned = text.replace(/\r/g, "");
+
+      const emailMatch = cleaned.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+      const phoneMatch = cleaned.match(/(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}|\b0\d{10,11}\b/g);
+      const postcodeMatch = cleaned.match(/\b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b/i);
+
+      const lines = cleaned
+        .split("\n")
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+      let contactName = "";
+      let address = "";
+      let jobNotes = cleaned;
+
+      const fromLine = lines.find(line => /^from:/i.test(line));
+      if (fromLine) {
+        const namePart = fromLine.replace(/^from:/i, "").split("<")[0].trim();
+        if (namePart) contactName = namePart;
+      }
+
+      if (!contactName) {
+        const greetingLine = lines.find(line =>
+          /^(hi|hello|dear)\s+[a-z ,.'-]+/i.test(line)
+        );
+        if (greetingLine) {
+          contactName = greetingLine
+            .replace(/^(hi|hello|dear)\s+/i, "")
+            .replace(/[,:].*$/, "")
+            .trim();
+        }
+      }
+
+      const addressKeywords = ["address", "property", "located at", "at "];
+      const addressLine = lines.find(line =>
+        addressKeywords.some(keyword => line.toLowerCase().includes(keyword))
+      );
+      if (addressLine) {
+        address = addressLine;
+      }
+
+      const possibleJobLines = lines.filter(line =>
+        !/^from:/i.test(line) &&
+        !/^sent:/i.test(line) &&
+        !/^to:/i.test(line) &&
+        !/^subject:/i.test(line)
+      );
+
+      const shortenedJobNotes = possibleJobLines.slice(0, 12).join("\n");
+
+      const output = 
+`Contact Name: ${contactName}
+Address: ${address}
+Postcode: ${postcodeMatch ? postcodeMatch[0] : ""}
+Phone: ${phoneMatch ? phoneMatch[0] : ""}
+Email: ${emailMatch ? emailMatch[0] : ""}
 
 Job Notes:
-${text}`
+${shortenedJobNotes || cleaned}`;
 
-document.getElementById("output").innerText=result
+      document.getElementById("outputBox").innerText = output;
+      document.getElementById("contactName").innerText = contactName || "-";
+      document.getElementById("phone").innerText = phoneMatch ? phoneMatch[0] : "-";
+      document.getElementById("email").innerText = emailMatch ? emailMatch[0] : "-";
+      document.getElementById("postcode").innerText = postcodeMatch ? postcodeMatch[0] : "-";
+      document.getElementById("address").innerText = address || "-";
+    }
 
-}
+    function copyOutput() {
+      const text = document.getElementById("outputBox").innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to clipboard");
+      });
+    }
 
-</script>
-
+    function clearAllFields() {
+      document.getElementById("emailInput").value = "";
+      document.getElementById("outputBox").innerText = "Your extracted job details will appear here.";
+      document.getElementById("contactName").innerText = "";
+      document.getElementById("phone").innerText = "";
+      document.getElementById("email").innerText = "";
+      document.getElementById("postcode").innerText = "";
+      document.getElementById("address").innerText = "";
+    }
+  </script>
 </body>
 </html>
