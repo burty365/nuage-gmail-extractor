@@ -6,6 +6,7 @@
   <title>Nu Age Gmail Job Extractor</title>
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -14,9 +15,45 @@
       min-height: 100vh;
       padding: 30px 20px 50px;
     }
-    .container { max-width: 1200px; margin: 0 auto; }
-    h1 { margin: 0 0 10px; text-align: center; font-size: 34px; }
-    .sub { text-align: center; color: #b8c4d9; margin-bottom: 30px; }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .title-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      font-size: 34px;
+    }
+
+    .beta-badge {
+      display: inline-block;
+      background: #f59e0b;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .sub {
+      text-align: center;
+      color: #b8c4d9;
+      margin-bottom: 30px;
+    }
+
     .card {
       background: #102449;
       border: 1px solid #1a315f;
@@ -25,12 +62,14 @@
       margin-bottom: 20px;
       box-shadow: 0 10px 24px rgba(0,0,0,0.2);
     }
+
     label {
       display: block;
       margin-bottom: 10px;
       font-weight: bold;
       color: white;
     }
+
     textarea {
       width: 100%;
       min-height: 280px;
@@ -43,17 +82,23 @@
       font-size: 14px;
       outline: none;
     }
-    textarea::placeholder { color: #8fa3c7; }
+
+    textarea::placeholder {
+      color: #8fa3c7;
+    }
+
     textarea:focus {
       border-color: #6cc04a;
       box-shadow: 0 0 0 3px rgba(108,192,74,0.2);
     }
+
     .btn-row {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       margin-top: 16px;
     }
+
     button {
       border: none;
       border-radius: 12px;
@@ -63,15 +108,31 @@
       cursor: pointer;
       transition: 0.2s ease;
     }
-    .btn-primary { background: #6cc04a; color: white; }
-    .btn-primary:hover { background: #5daf3d; }
-    .btn-secondary { background: #334766; color: white; }
-    .btn-secondary:hover { background: #40567a; }
+
+    .btn-primary {
+      background: #6cc04a;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5daf3d;
+    }
+
+    .btn-secondary {
+      background: #334766;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #40567a;
+    }
+
     .notice {
       color: #b8c4d9;
       font-size: 14px;
       margin-top: 10px;
     }
+
     .warning-box {
       background: #3a1d1d;
       border: 1px solid #7a2f2f;
@@ -81,6 +142,7 @@
       color: #ffd7d7;
       white-space: pre-wrap;
     }
+
     .summary-box {
       background: #0a1b38;
       border: 1px solid #1a315f;
@@ -90,13 +152,18 @@
       white-space: pre-wrap;
       line-height: 1.5;
     }
+
     .customer-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
       margin-top: 20px;
     }
-    .field { margin-bottom: 10px; }
+
+    .field {
+      margin-bottom: 10px;
+    }
+
     .field-title {
       font-size: 12px;
       text-transform: uppercase;
@@ -104,22 +171,26 @@
       margin-bottom: 4px;
       letter-spacing: 0.5px;
     }
+
     .field-value {
       color: white;
       white-space: pre-wrap;
       word-break: break-word;
     }
+
     .customer-card {
       background: #102449;
       border: 1px solid #1a315f;
       border-radius: 16px;
       padding: 18px;
     }
+
     .customer-title {
       margin: 0 0 14px;
       font-size: 22px;
       color: white;
     }
+
     .output-box {
       background: #0a1b38;
       border: 1px solid #1a315f;
@@ -131,20 +202,28 @@
       margin-top: 14px;
       min-height: 180px;
     }
+
     .small-row {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
       margin-top: 12px;
     }
+
     @media (max-width: 900px) {
-      .customer-grid { grid-template-columns: 1fr; }
+      .customer-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Nu Age Gmail Job Extractor</h1>
+    <div class="title-wrap">
+      <h1>Nu Age Gmail Job Extractor</h1>
+      <span class="beta-badge">BETA</span>
+    </div>
+
     <p class="sub">Paste an email chain and turn it into safer, cleaner CommuSoft-ready records.</p>
 
     <div class="card">
@@ -670,15 +749,21 @@ ${summaryLines.length ? summaryLines.join("\n") : "No clear scope found in email
 
     function copyCustomerOutput(index) {
       if (!window.__customerRecords || !window.__customerRecords[index]) return;
+
       navigator.clipboard.writeText(window.__customerRecords[index].commusoftOutput).then(() => {
         alert("Copied customer output");
+      }).catch(() => {
+        alert("Could not copy automatically. Please copy manually.");
       });
     }
 
     function copyThreadSummary() {
       const text = document.getElementById("threadSummary").innerText;
+
       navigator.clipboard.writeText(text).then(() => {
         alert("Copied thread summary");
+      }).catch(() => {
+        alert("Could not copy automatically. Please copy manually.");
       });
     }
 
